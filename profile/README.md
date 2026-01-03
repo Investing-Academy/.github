@@ -1,12 +1,55 @@
-## Hi there 👋
+# Project Architecture
 
-<!--
+```mermaid
+graph TB
+    subgraph Infrastructure["Infrastructure Layer"]
+        MongoDB[(MongoDB Database)]
+        DockerCompose[Docker Compose Orchestration]
+    end
 
-**Here are some ideas to get you started:**
+    subgraph ETL["ETL Processing Layer"]
+        SalesETL[Sales Data Pipeline]
+        StudentsETL[Students Data Pipeline]
+        StudentsCalc[Students Analytics Engine]
+        BackupRestore[Backup & Restore Service]
+    end
 
-🙋‍♀️ A short introduction - what is your organization all about?
-🌈 Contribution guidelines - how can the community get involved?
-👩‍💻 Useful resources - where can the community find your docs? Is there anything else the community should know?
-🍿 Fun facts - what does your team eat for breakfast?
-🧙 Remember, you can do mighty things with the power of [Markdown](https://docs.github.com/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
--->
+    subgraph DataSources["Data Sources"]
+        Gmail[Gmail API]
+        WhatsApp[WhatsApp Integration]
+    end
+
+    subgraph Storage["Data Storage"]
+        SalesSheet[Sales Google Sheet]
+        StudentsSheet[Students Google Sheet]
+    end
+
+    Gmail -->|Read Leads| SalesETL
+    SalesETL -->|Update| SalesSheet
+    
+    WhatsApp -->|Read Messages| StudentsETL
+    StudentsETL -->|Write Data| MongoDB
+    StudentsETL -->|Update| StudentsSheet
+    
+    MongoDB -->|Query Statistics| StudentsCalc
+    StudentsCalc -->|Update Analytics| StudentsSheet
+    
+    BackupRestore -->|Backup| MongoDB
+    BackupRestore -->|Restore| MongoDB
+    
+    DockerCompose -.->|Orchestrates| SalesETL
+    DockerCompose -.->|Orchestrates| StudentsETL
+    DockerCompose -.->|Orchestrates| StudentsCalc
+    DockerCompose -.->|Orchestrates| BackupRestore
+    DockerCompose -.->|Manages| MongoDB
+
+    classDef container fill:#2d3748,stroke:#4a5568,stroke-width:2px,color:#fff
+    classDef database fill:#1a365d,stroke:#2c5282,stroke-width:2px,color:#fff
+    classDef source fill:#22543d,stroke:#38a169,stroke-width:2px,color:#fff
+    classDef storage fill:#742a2a,stroke:#e53e3e,stroke-width:2px,color:#fff
+    
+    class SalesETL,StudentsETL,StudentsCalc,BackupRestore,DockerCompose container
+    class MongoDB database
+    class Gmail,WhatsApp source
+    class SalesSheet,StudentsSheet storage
+```
