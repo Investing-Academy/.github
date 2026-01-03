@@ -59,3 +59,34 @@ graph TB
     class Gmail,WhatsApp source
     class SalesSheet,StudentsSheet,TeachersSheet storage
 ```
+
+
+# websites - appscript
+
+```mermaid
+graph TB
+    subgraph Sales["Sales ETL Pipeline"]
+        A[Gmail Data Extraction Service]
+    end
+    
+    subgraph Students["Students ETL Pipeline"]
+        B[WhatsApp Integration Service]
+    end
+    
+    subgraph Payments["Teacher Payments ETL Pipeline"]
+        C[Google Sheets Sync Service<br/>Bidirectional data synchronization<br/>for lesson updates]
+    end
+    
+    D[MongoDB Database<br/>Central data repository]
+    E[Lead Management Portal<br/>CRM website for leads]
+    F[Student Management System<br/>Web-based administration portal]
+    G[Teacher Payment Portal<br/>Financial management interface]
+    
+    A -->|Extract sales data| D
+    B -->|Process student updates| D
+    D -->|Provide student data| B
+    C -->|Read/Write operations| D
+    E -->|Auto-sync lead signups| F
+    D -->|Supply data| F
+    D -->|Supply data| G
+```
