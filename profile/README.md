@@ -11,6 +11,7 @@ graph TB
         SalesETL[Sales Data Pipeline]
         StudentsETL[Students Data Pipeline]
         StudentsCalc[Students Analytics Engine]
+        TeachersPayments[Teachers Payments Processor]
         BackupRestore[Backup & Restore Service]
     end
 
@@ -22,6 +23,7 @@ graph TB
     subgraph Storage["Data Storage"]
         SalesSheet[Sales Google Sheet]
         StudentsSheet[Students Google Sheet]
+        TeachersSheet[Teachers Payments Sheet]
     end
 
     Gmail -->|Read Leads| SalesETL
@@ -34,12 +36,16 @@ graph TB
     MongoDB -->|Query Statistics| StudentsCalc
     StudentsCalc -->|Update Analytics| StudentsSheet
     
+    MongoDB -->|Query Payments Data| TeachersPayments
+    TeachersPayments -->|Update Payments| TeachersSheet
+    
     BackupRestore -->|Backup| MongoDB
     BackupRestore -->|Restore| MongoDB
     
     DockerCompose -.->|Orchestrates| SalesETL
     DockerCompose -.->|Orchestrates| StudentsETL
     DockerCompose -.->|Orchestrates| StudentsCalc
+    DockerCompose -.->|Orchestrates| TeachersPayments
     DockerCompose -.->|Orchestrates| BackupRestore
     DockerCompose -.->|Manages| MongoDB
 
@@ -48,8 +54,8 @@ graph TB
     classDef source fill:#22543d,stroke:#38a169,stroke-width:2px,color:#fff
     classDef storage fill:#742a2a,stroke:#e53e3e,stroke-width:2px,color:#fff
     
-    class SalesETL,StudentsETL,StudentsCalc,BackupRestore,DockerCompose container
+    class SalesETL,StudentsETL,StudentsCalc,TeachersPayments,BackupRestore,DockerCompose container
     class MongoDB database
     class Gmail,WhatsApp source
-    class SalesSheet,StudentsSheet storage
+    class SalesSheet,StudentsSheet,TeachersSheet storage
 ```
